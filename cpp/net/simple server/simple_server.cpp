@@ -1,6 +1,12 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define PERROR_EXIT(MSG)\
 do\
@@ -21,12 +27,12 @@ int main()
 
     srvAddr.sin_family = AF_INET;
     srvAddr.sin_port = htons(8888);
-    srvAddr.in_addr = INADDR_ANY;
+    srvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if (bind(srvSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)) < 0)
         PERROR_EXIT("bind failed");
 
-    if (listen(srvSocket, MAX_PENDING) < 0)
+    if (listen(srvSocket, 5) < 0)
         PERROR_EXIT("listen error");
     
     while (1)
@@ -34,7 +40,7 @@ int main()
         sockaddr_in clntAddr;
         socklen_t addr_len = sizeof(sockaddr_in);
 
-        int clntSocket = accept(srvSocket, (sockaddr*)&clnAddr, &addr_len);
+        int clntSocket = accept(srvSocket, (sockaddr*)&clntAddr, &addr_len);
         if (clntSocket < 0)
             PERROR_EXIT("accept failed");
 

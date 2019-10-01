@@ -7,13 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
-#define PERROR_EXIT(MSG)\
-do\
-{\
-    perror(MSG);\
-    exit(1);\
-} while (0)
+#include "common.h"
 
 
 int main()

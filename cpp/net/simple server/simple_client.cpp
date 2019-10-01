@@ -17,21 +17,25 @@ int main()
     
     srvAddr.sin_family = AF_INET;
     srvAddr.sin_port = htons(8888);
-    srvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    srvAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    if (!connect(clntSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)))
+    if (connect(clntSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)))//connect return 0 sucess
         PERROR_EXIT("connect failed");
 
-    char buffer[2048] = "hello world";
-    ssize_t len = send(clntSocket, buffer, strlen(buffer) + 1, 0);
-    if (len != strlen(buffer))
-        PERROR_EXIT("send failed");
+    char buffer[4][2048] = {"hello world", "xixihaha", "nice!", "endend"};
+ 
+    for (int i = 0 ; i < 4 ; i++)
+    {
+    	ssize_t len = send(clntSocket, buffer[i], strlen(buffer[i]) + 1, 0);
+   	if (len != strlen(buffer[i]) + 1)
+        	PERROR_EXIT("send failed");
 
-    len = recv(clntSocket, buffer, sizeof(buffer), 0);
-    if (len < 0)
-        PERROR_EXIT("recv failed");
+    	len = recv(clntSocket, buffer[i], 2048, 0);
+    	if (len < 0)
+        	PERROR_EXIT("recv failed");
 
-    std::cout << "echo :" << buffer << std::endl;
+    	std::cout << "echo :" << buffer[i] << std::endl;
+    }
 
     close(clntSocket);
     return 0;

@@ -51,10 +51,17 @@ int main()
 
         while (len > 0)
         {
+	    std::cout << "recv from cleint " << ip_clnt << ": " << szBuffer << std::endl;
+	    if (strcmp("endend", szBuffer) == 0)
+	    {
+	        close(clntSocket);
+		close(srvSocket);
+		exit(1);
+	    }
             ssize_t send_len = send(clntSocket, szBuffer, len, 0);
             if (send_len != len)
                 PERROR_EXIT("send error");
-            
+
             if ((len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0))  < 0)
                 PERROR_EXIT("recv failed");
         }

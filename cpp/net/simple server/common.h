@@ -1,6 +1,7 @@
-#ifndef _COMMON_
-#define _COMMON_
-#define PERROR_EXIT(MSG)\
+#ifndef _COMMON_NET_
+#define _COMMON_NET_
+
+#define PERROR_EXIT(MSG)\s
 do\
 {\
     perror(MSG);\

@@ -5,8 +5,9 @@
 #include <sys/types.h>
 #include "common.h"
 #include <sys/socket.h>
-
-
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 int main()
 {
     int clntSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -18,7 +19,7 @@ int main()
     srvAddr.sin_port = htons(8888);
     srvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (!connect(clntSocket, (sockaddr*)&srvAddr, sizeof(srvAddr))
+    if (!connect(clntSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)))
         PERROR_EXIT("connect failed");
 
     char buffer[2048] = "hello world";
@@ -30,7 +31,8 @@ int main()
     if (len < 0)
         PERROR_EXIT("recv failed");
 
-    std::cout << "echo :" << buffer << endl;
+    std::cout << "echo :" << buffer << std::endl;
 
     close(clntSocket);
+    return 0;
 }

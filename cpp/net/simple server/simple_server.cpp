@@ -48,30 +48,48 @@ int main()
         else
             std::cout << "error connection" << std::endl;
 
-        char szBuffer[2048] = {0};
-        ssize_t len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0);
-        if (len < 0)
-            PERROR_EXIT("recv failed");
-
-        while (len > 0)
+        pid_t pid = fork();
+        if (pid == -1)
+            PERROR_EXIT("fork failed");
+        
+        if (pid == 0)
         {
-            std::cout << "recv from cleint " << ip_clnt << ": " << szBuffer << std::endl;
-            if (strcmp("endend", szBuffer) == 0)
+            close(srvSocket);
+
+            char szBuffer[2048] = {0};
+            ssize_t len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0);
+
+            if (len < 0)
+                PERROR_EXIT("recv failed");
+            else if (len == 0)
             {
                 close(clntSocket);
-                close(srvSocket);
-                exit(1);
+                std::cout <<  "client " << ip_clnt << " disconnected" << std::endl;
+                exit(EXIT_SUCCESS);
             }
 
-            ssize_t send_len = send(clntSocket, szBuffer, len, 0);
-            if (send_len != len)
-                PERROR_EXIT("send error");
+            while (len > 0)
+            {
+                std::cout << "recv from client " << ip_clnt << ": " << szBuffer << std::endl;
+                if (strcmp("endend", szBuffer) == 0)
+                {
+                    close(clntSocket);
+                    exit(EXIT_SUCCESS);
+                }
 
-            if ((len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0))  < 0)
-                PERROR_EXIT("recv failed");
+                ssize_t send_len = send(clntSocket, szBuffer, len, 0);
+                if (send_len != len)
+                    PERROR_EXIT("send error");
+
+                if ((len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0))  < 0)
+                    PERROR_EXIT("recv failed");
+            }
+        }
+        else
+        {
+            close(clntSocket);
         }
         
-        close(clntSocket);
     }
 }
  

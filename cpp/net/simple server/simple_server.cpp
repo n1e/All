@@ -23,6 +23,10 @@ int main()
     srvAddr.sin_port = htons(8888);
     srvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+    int nOn = 1;
+    if (setsockopt(srvSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&nOn, sizeof(nOn)) < 0)
+        PERROR_EXIT("set option reuseraddr failed");
+        
     if (bind(srvSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)) < 0)
         PERROR_EXIT("bind failed");
 
@@ -51,13 +55,14 @@ int main()
 
         while (len > 0)
         {
-	    std::cout << "recv from cleint " << ip_clnt << ": " << szBuffer << std::endl;
-	    if (strcmp("endend", szBuffer) == 0)
-	    {
-	        close(clntSocket);
-		close(srvSocket);
-		exit(1);
-	    }
+            std::cout << "recv from cleint " << ip_clnt << ": " << szBuffer << std::endl;
+            if (strcmp("endend", szBuffer) == 0)
+            {
+                close(clntSocket);
+                close(srvSocket);
+                exit(1);
+            }
+
             ssize_t send_len = send(clntSocket, szBuffer, len, 0);
             if (send_len != len)
                 PERROR_EXIT("send error");

@@ -33,11 +33,13 @@ int main()
     if (listen(srvSocket, 5) < 0)
         PERROR_EXIT("listen error");
     
+    int count = 0;
     while (1)
     {
         sockaddr_in clntAddr;
         socklen_t addr_len = sizeof(sockaddr_in);
 
+        std::cout << "【Debug】 accept times : " << count << std::endl;
         int clntSocket = accept(srvSocket, (sockaddr*)&clntAddr, &addr_len);
         if (clntSocket < 0)
             PERROR_EXIT("accept failed");

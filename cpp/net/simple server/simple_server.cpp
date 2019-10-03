@@ -9,6 +9,37 @@
 #include <unistd.h>
 #include "common.h"
 
+void recv_client_msg(const int sock, const char *ipaddr)
+{
+    char szBuffer[2048];
+    while (1)
+    {
+        memset(szBuffer, 0, sizeof(szBuffer));
+        ssize_t len = recv(sock, szBuffer, sizeof(szBuffer), 0);
+
+        if (len < 0)
+        {
+            PERROR_EXIT("recv failed");
+        }
+        else if (len == 0)
+        {
+            close(sock);
+            std::cout <<  "client " << ipaddr << " disconnected" << std::endl;
+            exit(EXIT_SUCCESS);
+        }
+
+        std::cout << "client " << ipaddr << ": " << szBuffer << std::endl;
+        if (strcmp("endend", szBuffer) == 0)
+        {
+            close(sock);
+            exit(EXIT_SUCCESS);
+        }
+
+        ssize_t send_len = send(sock, szBuffer, len, 0);
+        if (send_len != len)
+            PERROR_EXIT("send error");
+    }
+}
 
 int main()
 {
@@ -18,7 +49,6 @@ int main()
     
     sockaddr_in srvAddr;
     memset(&srvAddr, 0, sizeof(sockaddr_in));
-
     srvAddr.sin_family = AF_INET;
     srvAddr.sin_port = htons(8888);
     srvAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -33,13 +63,11 @@ int main()
     if (listen(srvSocket, 5) < 0)
         PERROR_EXIT("listen error");
     
-    int count = 0;
     while (1)
     {
         sockaddr_in clntAddr;
         socklen_t addr_len = sizeof(sockaddr_in);
 
-        std::cout << "【Debug】 accept times : " << count << std::endl;
         int clntSocket = accept(srvSocket, (sockaddr*)&clntAddr, &addr_len);
         if (clntSocket < 0)
             PERROR_EXIT("accept failed");
@@ -53,39 +81,10 @@ int main()
         pid_t pid = fork();
         if (pid == -1)
             PERROR_EXIT("fork failed");
-        
-        if (pid == 0)
+        else if (pid == 0)
         {
             close(srvSocket);
-
-            char szBuffer[2048] = {0};
-            ssize_t len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0);
-
-            if (len < 0)
-                PERROR_EXIT("recv failed");
-            else if (len == 0)
-            {
-                close(clntSocket);
-                std::cout <<  "client " << ip_clnt << " disconnected" << std::endl;
-                exit(EXIT_SUCCESS);
-            }
-
-            while (len > 0)
-            {
-                std::cout << "recv from client " << ip_clnt << ": " << szBuffer << std::endl;
-                if (strcmp("endend", szBuffer) == 0)
-                {
-                    close(clntSocket);
-                    exit(EXIT_SUCCESS);
-                }
-
-                ssize_t send_len = send(clntSocket, szBuffer, len, 0);
-                if (send_len != len)
-                    PERROR_EXIT("send error");
-
-                if ((len = recv(clntSocket, szBuffer, sizeof(szBuffer), 0))  < 0)
-                    PERROR_EXIT("recv failed");
-            }
+            recv_client_msg(clntSocket, ip_clnt);
         }
         else
         {

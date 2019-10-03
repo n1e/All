@@ -27,7 +27,7 @@ int main()
     for (int i = 0 ; i < 4 ; i++)
     {
     	ssize_t len = send(clntSocket, buffer[i], strlen(buffer[i]) + 1, 0);
-   	if (len != strlen(buffer[i]) + 1)
+   	    if (len != strlen(buffer[i]) + 1)
         	PERROR_EXIT("send failed");
 
     	len = recv(clntSocket, buffer[i], 2048, 0);
@@ -36,6 +36,20 @@ int main()
 
     	std::cout << "echo :" << buffer[i] << std::endl;
     }
+
+    char msg[1024] = {0};
+    while (std::cin >> msg)
+    {
+        ssize_t len = send(clntSocket, msg, strlen(msg) + 1, 0);
+   	    if (len != strlen(msg) + 1)
+        	PERROR_EXIT("send failed");
+
+    	len = recv(clntSocket, msg, 2048, 0);
+    	if (len < 0)
+        	PERROR_EXIT("recv failed");
+
+    	std::cout << "echo :" << msg << std::endl;
+    } 
 
     close(clntSocket);
     return 0;

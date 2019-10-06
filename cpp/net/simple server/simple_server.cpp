@@ -11,32 +11,39 @@
 
 void recv_client_msg(const int sock, const char *ipaddr)
 {
-    char szBuffer[2048];
+    NetPack recvbuf;
     while (1)
     {
-        memset(szBuffer, 0, sizeof(szBuffer));
-        ssize_t len = recv(sock, szBuffer, sizeof(szBuffer), 0);
+        memset(&recvbuf, 0, sizeof(recvbuf));
+        ssize_t len = recv(sock, &(recvbuf.len), sizeof(int), 0);
 
         if (len < 0)
         {
-            PERROR_EXIT("recv failed");
+            PERROR_EXIT("first recv failed");
         }
-        else if (len == 0)
+        else if (len < sizeof(int))
         {
             close(sock);
             std::cout <<  "client " << ipaddr << " disconnected" << std::endl;
             exit(EXIT_SUCCESS);
         }
 
-        std::cout << "client " << ipaddr << ": " << szBuffer << std::endl;
-        if (strcmp("endend", szBuffer) == 0)
+        len = recv(sock, recvbuf.buffer, ntohl(recvbuf.len), 0);
+        if (len < 0)
+        {
+            PERROR_EXIT("second recv failed");
+        }
+        else if (len < ntohl(recvbuf.len))
         {
             close(sock);
+            std::cout <<  "client " << ipaddr << " disconnected" << std::endl;
             exit(EXIT_SUCCESS);
         }
-
-        ssize_t send_len = send(sock, szBuffer, len, 0);
-        if (send_len != len)
+        
+        std::cout << "client " << ipaddr << ": " << recvbuf.buffer << std::endl;
+        
+        ssize_t send_len = send(sock, &recvbuf, len + ntohl(recvbuf.len), 0);
+        if (send_len != len + ntohl(recvbuf.len))
             PERROR_EXIT("send error");
     }
 }

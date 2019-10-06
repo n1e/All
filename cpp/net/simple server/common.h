@@ -9,4 +9,10 @@ do\
 } while (0)
 
 
+struct NetPack
+{
+    int len;
+    char buffer[2048];
+};
+
 #endif

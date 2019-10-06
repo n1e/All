@@ -22,33 +22,39 @@ int main()
     if (connect(clntSocket, (sockaddr*)&srvAddr, sizeof(srvAddr)))//connect return 0 sucess
         PERROR_EXIT("connect failed");
 
-    char buffer[4][2048] = {"hello world", "xixihaha", "nice!", "endend"};
- 
-    for (int i = 0 ; i < 4 ; i++)
+    NetPack sendbuf;
+    NetPack recvbuf;
+    memset(&sendbuf, 0, sizeof(sendbuf));
+    memset(&recvbuf, 0, sizeof(recvbuf));
+
+    while (std::cin >> sendbuf.buffer)
     {
-    	ssize_t len = send(clntSocket, buffer[i], strlen(buffer[i]) + 1, 0);
-   	    if (len != strlen(buffer[i]) + 1)
+        sendbuf.len = strlen(sendbuf.buffer) + 1;
+        ssize_t len = send(clntSocket, &sendbuf, sizeof(int) + sendbuf.len, 0);
+   	    if (len != sizeof(int) + sendbuf.len)
         	PERROR_EXIT("send failed");
 
-    	len = recv(clntSocket, buffer[i], 2048, 0);
+    	len = recv(clntSocket, &recvbuf.len, sizeof(int), 0);
     	if (len < 0)
-        	PERROR_EXIT("recv failed");
+        	PERROR_EXIT("first recv failed");
+        else if (len < sizeof(int))
+        {
+            std::cout << "server disconnected" << std::endl;
+            break;
+        }
 
-    	std::cout << "echo :" << buffer[i] << std::endl;
-    }
+        len = recv(clntSocket, recvbuf.buffer, recvbuf.len, 0);
+        if (len < 0)
+            PERROR_EXIT("second recv failed");
+        else if (len < recvbuf.len)
+        {
+            std::cout << "server disconnected" << std::endl;
+            break;
+        }
 
-    char msg[1024] = {0};
-    while (std::cin >> msg)
-    {
-        ssize_t len = send(clntSocket, msg, strlen(msg) + 1, 0);
-   	    if (len != strlen(msg) + 1)
-        	PERROR_EXIT("send failed");
-
-    	len = recv(clntSocket, msg, 2048, 0);
-    	if (len < 0)
-        	PERROR_EXIT("recv failed");
-
-    	std::cout << "echo :" << msg << std::endl;
+    	std::cout << "echo :" << recvbuf.buffer << std::endl;
+        memset(&sendbuf, 0, sizeof(sendbuf));
+        memset(&recvbuf, 0, sizeof(recvbuf));
     } 
 
     close(clntSocket);

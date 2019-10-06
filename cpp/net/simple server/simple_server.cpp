@@ -28,7 +28,6 @@ void recv_client_msg(const int sock, const char *ipaddr)
             exit(EXIT_SUCCESS);
         }
 
-        std::cout << "[DEBUG]recvbuf.len" << recvbuf.len << ",ntoll(recvbuf.len):" << ntohl(recvbuf.len) << std::endl;
         len = recv(sock, recvbuf.buffer, ntohl(recvbuf.len), 0);
         if (len < 0)
         {

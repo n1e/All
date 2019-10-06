@@ -24,7 +24,7 @@ void recv_client_msg(const int sock, const char *ipaddr)
         else if (len < sizeof(int))
         {
             close(sock);
-            std::cout <<  "client " << ipaddr << " disconnected" << std::endl;
+            std::cout <<  "first client " << ipaddr << " disconnected" << std::endl;
             exit(EXIT_SUCCESS);
         }
 
@@ -36,7 +36,7 @@ void recv_client_msg(const int sock, const char *ipaddr)
         else if (len < ntohl(recvbuf.len))
         {
             close(sock);
-            std::cout <<  "client " << ipaddr << " disconnected" << std::endl;
+            std::cout <<  "second client " << ipaddr << " disconnected" << std::endl;
             exit(EXIT_SUCCESS);
         }
         

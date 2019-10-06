@@ -39,7 +39,7 @@ int main()
         	PERROR_EXIT("first recv failed");
         else if (len < sizeof(int))
         {
-            std::cout << "server disconnected" << std::endl;
+            std::cout << "first server disconnected" << std::endl;
             break;
         }
 
@@ -48,7 +48,7 @@ int main()
             PERROR_EXIT("second recv failed");
         else if (len < recvbuf.len)
         {
-            std::cout << "server disconnected" << std::endl;
+            std::cout << "second server disconnected" << std::endl;
             break;
         }
 

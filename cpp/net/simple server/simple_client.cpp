@@ -30,8 +30,8 @@ int main()
     while (std::cin >> sendbuf.buffer)
     {
         sendbuf.len = htonl(strlen(sendbuf.buffer) + 1);
-        ssize_t len = send(clntSocket, &sendbuf, sizeof(int) + sendbuf.len, 0);
-   	    if (len != sizeof(int) + sendbuf.len)
+        ssize_t len = send(clntSocket, &sendbuf, sizeof(int) + strlen(sendbuf.buffer) + 1, 0);
+   	    if (len != sizeof(int) + strlen(sendbuf.buffer) + 1)
         	PERROR_EXIT("send failed");
 
     	len = recv(clntSocket, &recvbuf.len, sizeof(int), 0);

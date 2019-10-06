@@ -46,7 +46,7 @@ void recv_client_msg(const int sock, const char *ipaddr)
         if (send_len != len + ntohl(recvbuf.len))
             PERROR_EXIT("send error");
     }
-}
+};
 
 int main()
 {

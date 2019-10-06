@@ -43,10 +43,10 @@ int main()
             break;
         }
 
-        len = recv(clntSocket, recvbuf.buffer, recvbuf.len, 0);
+        len = recv(clntSocket, recvbuf.buffer, ntohl(recvbuf.len), 0);
         if (len < 0)
             PERROR_EXIT("second recv failed");
-        else if (len < recvbuf.len)
+        else if (len < ntohl(recvbuf.len))
         {
             std::cout << "second server disconnected(" << len << ")" << std::endl;
             break;

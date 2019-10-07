@@ -42,8 +42,8 @@ void recv_client_msg(const int sock, const char *ipaddr)
         
         std::cout << "client " << ipaddr << ": " << recvbuf.buffer << std::endl;
         
-        ssize_t send_len = send(sock, &recvbuf, len + ntohl(recvbuf.len), 0);
-        if (send_len != len + ntohl(recvbuf.len))
+        ssize_t send_len = send(sock, &recvbuf, sizeof(int) + ntohl(recvbuf.len), 0);
+        if (send_len != sizeof(int) + ntohl(recvbuf.len))
             PERROR_EXIT("send error");
     }
 };

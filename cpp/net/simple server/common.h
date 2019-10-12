@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
+#include <netdb.h>
 
 #define PERROR_EXIT(MSG)\
 do\

@@ -8,8 +8,20 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 int main()
 {
+    char name[1024] = {0};
+    gethostname(name, sizeof(name));
+    std::cout << "hostname is :" << name << std::endl;
+
+    hostent objHostent;
+    memset(&objHostent, 0, sizeof(objHostent));
+    for (int i = 0 ; objHostent.h_addr_list[i] ; i++)
+    {
+        std::cout << "hostip[" << i+1 << "] :" << objHostent.h_addr_list[i] << std::endl;
+    }
+    
     int clntSocket = socket(AF_INET, SOCK_STREAM, 0);
     
     sockaddr_in srvAddr;

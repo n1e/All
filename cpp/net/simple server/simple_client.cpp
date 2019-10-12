@@ -15,11 +15,12 @@ int main()
     gethostname(name, sizeof(name));
     std::cout << "hostname is :" << name << std::endl;
 
-    hostent objHostent;
-    memset(&objHostent, 0, sizeof(objHostent));
-    for (int i = 0 ; objHostent.h_addr_list[i] ; i++)
+    hostent *pHostent;
+    memset(&pHostent, 0, sizeof(pHostent));
+    pHostent = gethostbyname(name);
+    for (int i = 0 ; pHostent->h_addr_list[i] ; i++)
     {
-        std::cout << "hostip[" << i+1 << "] :" << objHostent.h_addr_list[i] << std::endl;
+        std::cout << "hostip[" << i+1 << "] :" << inet_ntoa(*(in_addr*)pHostent->h_addr_list[i]) << std::endl;
     }
     
     int clntSocket = socket(AF_INET, SOCK_STREAM, 0);

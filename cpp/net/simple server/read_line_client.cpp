@@ -32,7 +32,7 @@ int main()
             PERROR_EXIT("readn failed");
         else if (ret == 0)
         {
-            PERROR_EXIT("readn length not equal need");
+            PERROR_EXIT("server disconnect");
             exit(EXIT_SUCCESS);
         }
         

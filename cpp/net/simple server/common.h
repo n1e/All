@@ -18,7 +18,7 @@
 do\
 {\
     perror(MSG);\
-    exit(1);\
+    exit(EXIT_SUCCESS);\
 } while (0)
 
 

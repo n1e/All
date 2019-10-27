@@ -18,12 +18,12 @@ int main()
     srvaddr.sin_port = htons(8888);
     srvaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (bind(sock, (sockaddr*)&srvaddr, sizeof(srvaddr)))
-        PERROR_EXIT("bind failed");
-
     int flag = 1;
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void *)&flag, sizeof(flag)))
         PERROR_EXIT("setsockopt failed");
+    
+    if (bind(sock, (sockaddr*)&srvaddr, sizeof(srvaddr)))
+        PERROR_EXIT("bind failed");
 
     if (listen(sock, 128))
         PERROR_EXIT("listen failed");
@@ -72,7 +72,8 @@ int main()
                 }
                 memset(msg, 0, sizeof(msg)); 
             }
-            close(sock_clnt);
+            //sleep(10);
+            //close(sock_clnt);
             exit(EXIT_SUCCESS);
             kill(getppid(), SIGUSR1);
         }

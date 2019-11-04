@@ -13,6 +13,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <netdb.h>
+#include <sys/select.h>
 
 #define PERROR_EXIT(MSG)\
 do\

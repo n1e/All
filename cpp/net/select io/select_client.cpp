@@ -4,7 +4,7 @@ int domain(int sock)
     fd_set readSet;
     FD_ZERO(&readSet);
 
-    int fd_stdin = fileno(std::cin);
+    int fd_stdin = fileno(stdin);
     timeval timeout;
 
     char readBuffer[2048] = {0};
@@ -22,7 +22,10 @@ int domain(int sock)
         if (nCount == -1)
             PERROR_EXIT("select failed");
         else if (nCount == 0)
+        {
+            std::cout << "count is 0" << std::endl;
             continue;
+        }
         
         if (FD_ISSET(sock, &readSet))
         {
@@ -41,9 +44,13 @@ int domain(int sock)
 
         if (FD_ISSET(fd_stdin, &readSet))
         {
-            if (std::cin >> writeBuffer)
-                writen(sock, writeBuffer, strlen(writeBuffer));
-            
+            std::cin >> writeBuffer;
+            int nLen = strlen(writeBuffer);
+            writeBuffer[nLen] = '\n';
+            nLen = writen(sock, writeBuffer, strlen(writeBuffer));
+            if (nLen < 0)
+                PERROR_EXIT("writen failed");
+
             memset(writeBuffer, 0, sizeof(writeBuffer));
         }
     }

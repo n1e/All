@@ -82,6 +82,7 @@ while ((opt = getopt(argc, argv, "ab:c:de::") != EOF) ;
 解析 ./test -a -b -c -d -e file1 code file2 file3
 其中-c是选项b的参数，应为b的格式为b:，是携带参数的。
 其中file3 不是-e的参数，因为e选项的格式为e::，如果携带参数，格式应该是-efile3
+解析完成以后optind指向第一个非选项的参数，即file1
 
 
 2.

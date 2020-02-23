@@ -74,3 +74,14 @@ while((opt=getopt_long(argc,argv,"912Vfrt:p:c:?h",long_options,&options_index))!
         case 'c': clients=atoi(optarg);break;
     }
 }
+
+//getopt将选项及参数依次放到argv数组的最左边，非选项参数依次放到argv的最后边
+解析示例：
+while ((opt = getopt(argc, argv, "ab:c:de::") != EOF) ;
+执行 ./test file1 -a -b -c code -d file2 -e file3
+解析 ./test -a -b -c -d -e file1 code file2 file3
+其中-c是选项b的参数，应为b的格式为b:，是携带参数的。
+其中file3 不是-e的参数，因为e选项的格式为e::，如果携带参数，格式应该是-efile3
+
+
+2.

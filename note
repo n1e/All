@@ -1,0 +1,17 @@
+1.getopt_long
+
+int getopt(int argc, char * const argv[],const char *optstring);  
+int getopt_long(int argc, char * const argv[], const char *optstring, const struct option *longopts, int *longindex);  
+int getopt_long_only(int argc, char * const argv[], const char *optstring, const struct option *longopts, int *longindex);
+
+optstring格式：
+eg.“ab:c::”
+单个字符a         表示选项a没有参数            格式：-a即可，不加参数
+单字符加冒号b:     表示选项b有且必须加参数      格式：-b 100或-b100,但-b=100错
+单字符加2冒号c::   表示选项c可以有，也可以无     格式：-c200，其它格式错误 不能是 -c 200
+
+三者区别：
+getopt直解析 -a 这种单横线的短选项，解析方式由optstring中定义的格式决定
+getopt_long包含getopt的功能并能够额外解析由结构体option定于的长选项 --name
+getopt_long_only 对--name -name都优先解析为长选项，解析-name时如果在定义的option结构体对象中没有的话，再以短选项去解析
+

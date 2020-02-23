@@ -15,3 +15,62 @@ getopt直解析 -a 这种单横线的短选项，解析方式由optstring中定�
 getopt_long包含getopt的功能并能够额外解析由结构体option定于的长选项 --name
 getopt_long_only 对--name -name都优先解析为长选项，解析-name时如果在定义的option结构体对象中没有的话，再以短选项去解析
 
+eg.(source code from webbench)
+
+static const struct option long_options[]=
+{
+    {"force",no_argument,&force,1},
+    {"reload",no_argument,&force_reload,1},
+    {"time",required_argument,NULL,'t'},
+    {"help",no_argument,NULL,'?'},
+    {"http09",no_argument,NULL,'9'},
+    {"http10",no_argument,NULL,'1'},
+    {"http11",no_argument,NULL,'2'},
+    {"get",no_argument,&method,METHOD_GET},
+    {"head",no_argument,&method,METHOD_HEAD},
+    {"options",no_argument,&method,METHOD_OPTIONS},
+    {"trace",no_argument,&method,METHOD_TRACE},
+    {"version",no_argument,NULL,'V'},
+    {"proxy",required_argument,NULL,'p'},
+    {"clients",required_argument,NULL,'c'},
+    {NULL,0,NULL,0}
+};
+
+while((opt=getopt_long(argc,argv,"912Vfrt:p:c:?h",long_options,&options_index))!=EOF )
+{
+    switch(opt)
+    {
+        case  0 : break;
+        case 'f': force=1;break;
+        case 'r': force_reload=1;break; 
+        case '9': http10=0;break;
+        case '1': http10=1;break;
+        case '2': http10=2;break;
+        case 'V': printf(PROGRAM_VERSION"\n");exit(0);
+        case 't': benchtime=atoi(optarg);break;	     
+        case 'p': 
+        /* proxy server parsing server:port */
+        tmp=strrchr(optarg,':');
+        proxyhost=optarg;
+        if(tmp==NULL)
+        {
+            break;
+        }
+        if(tmp==optarg)
+        {
+            fprintf(stderr,"Error in option --proxy %s: Missing hostname.\n",optarg);
+            return 2;
+        }
+        if(tmp==optarg+strlen(optarg)-1)
+        {
+            fprintf(stderr,"Error in option --proxy %s Port number is missing.\n",optarg);
+            return 2;
+        }
+        *tmp='\0';
+        proxyport=atoi(tmp+1);break;
+        case ':':
+        case 'h':
+        case '?': usage();return 2;break;
+        case 'c': clients=atoi(optarg);break;
+    }
+}
